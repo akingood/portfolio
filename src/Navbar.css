@@ -1,0 +1,71 @@
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+}
+
+.nav-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #87bfdf;
+    flex-shrink: 0;
+}
+
+.nav-title:hover {
+    color: white;
+    filter: drop-shadow(0 0 18px #fff);
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap; /* Allows wrapping if space is small */
+    gap: 20px;
+    justify-content: flex-end;
+}
+
+.nav-links li {
+    list-style: none;
+}
+
+.nav-links li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    padding: 8px 10px;
+}
+
+.home-btn:hover {
+    filter: drop-shadow(0 0 18px #008cff);
+}
+
+.about-btn:hover {
+    filter: drop-shadow(0 0 18px #BF00FF);
+}
+
+.experience-btn:hover {
+    filter: drop-shadow(0 0 18px #ff0000);
+}
+
+.skills-btn:hover {
+    filter: drop-shadow(0 0 18px #00ff00);
+}
+
+.projects-btn:hover {
+    filter: drop-shadow(0 0 18px #FFD300);
+}
+
+.certificates-btn:hover {
+    filter: drop-shadow(0 0 18px #FF8B00);
+}
