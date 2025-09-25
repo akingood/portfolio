@@ -8,60 +8,70 @@ function Navbar() {
 
   const generateResume = () => {
     const doc = new jsPDF({
-      unit: "pt", // points for precise control
+      unit: "pt",
       format: "a4"
     });
 
-    let y = 60; // top margin
+    // Page setup
     const leftMargin = 40;
-    const maxWidth = 515; // A4 width (595pt) - margins (40 left + 40 right)
+    const rightMargin = 40;
+    const topMargin = 60;
+    const bottomMargin = 60;
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const maxWidth = doc.internal.pageSize.getWidth() - leftMargin - rightMargin;
+    let y = topMargin;
+
+    // Helper: check for page break
+    const checkPageBreak = (neededHeight = 20) => {
+      if (y + neededHeight > pageHeight - bottomMargin) {
+        doc.addPage();
+        y = topMargin;
+      }
+    };
+
+    // Helper: add wrapped text with spacing
+    const addWrappedText = (text, x = leftMargin, fontSize = 11, lineHeight = 14, indent = 0) => {
+      doc.setFontSize(fontSize);
+      const wrapped = doc.splitTextToSize(text, maxWidth - indent);
+      wrapped.forEach(line => {
+        checkPageBreak(lineHeight);
+        doc.text(line, x + indent, y);
+        y += lineHeight;
+      });
+      return wrapped.length * lineHeight;
+    };
 
     // ===== Header =====
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("AKILESH V", 297.5, y, { align: "center" });
-    y += 20;
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(
-      "akivenky10@gmail.com | linkedin | GitHub | +91 8438396334 | Chennai",
-      297.5,
-      y,
-      { align: "center", maxWidth: maxWidth }
-    );
-    y += 30;
+    doc.text("AKILESH V", doc.internal.pageSize.getWidth() / 2, y, { align: "center" });
+    y += 22;
 
     // ===== Summary =====
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
     doc.text("Summary", leftMargin, y);
-    y += 16;
+    y += 18;
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(aboutMe, leftMargin, y, { maxWidth: maxWidth });
-    y += 60;
+    addWrappedText(aboutMe, leftMargin, 11, 14);
+    y += 10;
 
     // ===== Education =====
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
     doc.text("Education", leftMargin, y);
-    y += 16;
+    y += 18;
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
-    doc.text(
+    addWrappedText(
       "B.Tech in Computer Science and Engineering (Cybersecurity), SRM Institute of Science and Technology",
-      leftMargin,
-      y,
-      { maxWidth: maxWidth }
+      leftMargin, 11, 14
     );
-    y += 14;
-    doc.text("2022 - 2026 | Current CGPA: 9.20", leftMargin, y);
-    y += 30;
+    addWrappedText("2022 - 2026 | Current CGPA: 9.20", leftMargin, 11, 14);
+    y += 10;
 
-    // ===== Experience =====
+    // ===== Work Experience =====
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
     doc.text("Work Experience", leftMargin, y);
@@ -70,28 +80,21 @@ function Navbar() {
     experience.forEach((exp) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(12);
-      doc.text(`${exp.title} – ${exp.organization}`, leftMargin, y);
-      y += 14;
+      addWrappedText(`${exp.title} – ${exp.organization}`, leftMargin, 12, 16);
 
       doc.setFont("helvetica", "italic");
-      doc.setFontSize(10);
-      doc.text(exp.duration, leftMargin, y);
-      y += 14;
+      addWrappedText(exp.duration, leftMargin, 10, 14);
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
       exp.description.split("\n").forEach((line) => {
         if (line.trim() !== "") {
-          doc.text(`• ${line.trim()}`, leftMargin + 15, y, {
-            maxWidth: maxWidth - 20,
-          });
-          y += 14;
+          addWrappedText(`${line.trim()}`, leftMargin, 11, 14, 15);
         }
       });
-      y += 12;
+      y += 10;
     });
 
-    // ===== Skills =====
+    // ===== Technical Skills =====
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
     doc.text("Technical Skills", leftMargin, y);
@@ -99,15 +102,10 @@ function Navbar() {
 
     skills.forEach((group) => {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
-      doc.text(group.category + ":", leftMargin, y);
+      addWrappedText(group.category + ":", leftMargin, 11, 14);
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.text(group.items.join(", "), leftMargin + 100, y, {
-        maxWidth: maxWidth - 100,
-      });
-      y += 16;
+      addWrappedText(group.items.join(", "), leftMargin + 15, 11, 14);
     });
     y += 10;
 
@@ -119,18 +117,12 @@ function Navbar() {
 
     projects.forEach((p) => {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text(p.title, leftMargin, y);
-      y += 14;
+      addWrappedText(p.title, leftMargin, 12, 16);
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.text(`• ${p.caption}`, leftMargin + 15, y, { maxWidth: maxWidth - 20 });
-      y += 14;
-      doc.text(`Tech: ${p.tech}`, leftMargin + 15, y, {
-        maxWidth: maxWidth - 20,
-      });
-      y += 18;
+      addWrappedText(`• ${p.caption}`, leftMargin, 11, 14, 15);
+      addWrappedText(`Tech: ${p.tech}`, leftMargin, 11, 14, 15);
+      y += 10;
     });
 
     // ===== Certifications =====
@@ -140,19 +132,10 @@ function Navbar() {
     y += 20;
 
     certificates.forEach((c) => {
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(12);
-      doc.text(c.title, leftMargin, y);
-      y += 14;
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(11);
-      doc.text(c.organization, leftMargin + 15, y);
-      y += 14;
-      doc.text(`Link: ${c.link}`, leftMargin + 15, y, {
-        maxWidth: maxWidth - 20,
-      });
-      y += 18;
+      addWrappedText(`${c.title} - ${c.organization}`, leftMargin, 11, 14);
+      y += 10;
     });
 
     doc.save("AkileshV_Resume.pdf");
